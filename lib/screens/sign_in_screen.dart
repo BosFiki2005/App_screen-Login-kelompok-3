@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // 1. Tambahkan import provider
+import '../viewmodels/sign_in_view_model.dart'; // 2. Pastikan path import benar
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -13,6 +15,15 @@ class _SignInScreenState extends State<SignInScreen> {
   String? password;
 
   @override
+  void initState() {
+    super.initState();
+    // 3. Panggil fungsi ambil data API saat layar pertama kali dimuat
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SignInViewModel>().fetchTitle();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -24,17 +35,25 @@ class _SignInScreenState extends State<SignInScreen> {
               child: Column(
                 children: [
                   SizedBox(height: constraints.maxHeight * 0.1),
-                  Image.network(
-                    "https://i.postimg.cc/nz0YBQcH/Logo-light.png",
-                    height: 100,
-                  ),
+Image.asset(
+  "assets/logo.png",
+  height: 100,
+),
                   SizedBox(height: constraints.maxHeight * 0.1),
-                  Text(
-                    "Sign In",
-                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+
+                  // 4. BUNGKUS DENGAN CONSUMER AGAR TEKS BERUBAH OTOMATIS
+                  Consumer<SignInViewModel>(
+                    builder: (context, viewModel, child) {
+                      return Text(
+                        viewModel.isLoading ? "Loading..." : viewModel.title,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      );
+                    },
                   ),
+
                   SizedBox(height: constraints.maxHeight * 0.05),
 
                   Form(
@@ -48,9 +67,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               value!.isEmpty ? "Phone wajib diisi" : null,
                           onSaved: (value) => phone = value,
                         ),
-
                         const SizedBox(height: 16),
-
                         TextFormField(
                           obscureText: true,
                           decoration: _inputDecoration("Password"),
@@ -58,30 +75,24 @@ class _SignInScreenState extends State<SignInScreen> {
                               value!.length < 6 ? "Minimal 6 karakter" : null,
                           onSaved: (value) => password = value,
                         ),
-
                         const SizedBox(height: 16),
-
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-
                               Navigator.pushNamed(context, '/otp');
                             }
                           },
                           style: _buttonStyle(const Color(0xFF00BF6D)),
                           child: const Text("Sign in"),
                         ),
-
                         const SizedBox(height: 16),
-
                         TextButton(
                           onPressed: () {
                             Navigator.pushNamed(context, '/confirm-password');
                           },
                           child: const Text("Forgot Password?"),
                         ),
-
                         TextButton(
                           onPressed: () {},
                           child: const Text("Don’t have an account? Sign Up"),
@@ -98,6 +109,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
+  // ... (Method _inputDecoration dan _buttonStyle tetap sama)
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
