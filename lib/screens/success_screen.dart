@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'cart_screen.dart';
 import '../../models/login_response.dart';
-import 'product_screen.dart'; // Pastikan file ini sudah ada di folder yang sama
+import 'product_screen.dart';
 
 class SuccessRegistrationScreen extends StatelessWidget {
   final LoginResponse loginData;
@@ -17,6 +18,17 @@ class SuccessRegistrationScreen extends StatelessWidget {
         title: const Text("Registration Success"),
         backgroundColor: Colors.green,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CartScreen()),
+              );
+            },
+          )
+        ],
       ),
       body: Center(
         child: Padding(
@@ -24,23 +36,18 @@ class SuccessRegistrationScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Icon Sukses
               const Icon(
                 Icons.check_circle_outline,
                 size: 100,
                 color: Colors.green,
               ),
               const SizedBox(height: 20),
-              
-              // Pesan Status dari API
               Text(
                 "Status: ${loginData.message}",
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
-              
-              // Cuplikan Token
               Text(
                 "Token: ${loginData.token.length > 10 ? loginData.token.substring(0, 10) : loginData.token}...",
                 style: const TextStyle(color: Colors.grey),
@@ -55,12 +62,12 @@ class SuccessRegistrationScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ProductScreen(),
+                        builder: (context) =>  ProductScreen(),
                       ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent, // Warna utama tombol
+                    backgroundColor: Colors.blueAccent,
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
