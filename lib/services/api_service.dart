@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/cart_item.dart'; // Import model yang baru dibuat
 
 class ApiService {
-  // Base URL sesuai dengan konstanta proyek Anda
   static const String baseUrl = 'https://api.ppb.widiarrohman.my.id/api/2026/uts/A/kelompok4';
 
-  /// Fungsi untuk mengambil judul (check endpoint)
   static Future<String> getTitle() async {
     final response = await http.get(
       Uri.parse('https://api.ppb.widiarrohman.my.id/api/2026/uts/B/kelompok3/check'),
@@ -18,7 +17,6 @@ class ApiService {
     }
   }
 
-  /// Fungsi Login (Mengirim data POST ke API)
   static Future<Map<String, dynamic>> login(String username, String password) async {
     final url = Uri.parse('$baseUrl/login');
 
@@ -33,7 +31,6 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        // Mengembalikan data JSON (status, message, token)
         return jsonDecode(response.body);
       } else {
         final errorData = jsonDecode(response.body);
@@ -44,8 +41,6 @@ class ApiService {
     }
   }
 
-  /// Fungsi Get Products (Konversi dari Axios JavaScript)
-  /// Mengambil data produk dari endpoint Kelompok 3 sesuai gambar Hoppscotch
   static Future<List<dynamic>> getProducts() async {
     const String productUrl = 'https://api.ppb.widiarrohman.my.id/api/2026/uts/B/kelompok3/products';
 
@@ -54,8 +49,6 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> decodedData = jsonDecode(response.body);
-        
-        // Sesuai dengan struktur JSON di image_f02837.png, data produk ada di key 'data'
         if (decodedData['status'] == 'success') {
           return decodedData['data'];
         } else {
@@ -66,6 +59,32 @@ class ApiService {
       }
     } catch (e) {
       throw Exception('Terjadi kesalahan koneksi saat mengambil produk: $e');
+    }
+  }
+
+  /// === FIX: getCart dengan Model & Perbaikan Variabel Exception ===
+  static Future<List<CartItem>> getCart() async {
+    const String cartUrl = 'https://api.ppb.widiarrohman.my.id/api/2026/uts/B/kelompok3/cart';
+
+    try {
+      final response = await http.get(Uri.parse(cartUrl));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        
+        if (decodedData['status'] == 'success') {
+          // Mapping data list dynamic ke list object CartItem
+          List<dynamic> data = decodedData['data'];
+          return data.map((item) => CartItem.fromJson(item)).toList();
+        } else {
+          throw Exception('Gagal mengambil data keranjang');
+        }
+      } else {
+        throw Exception('Error server: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Perbaikan: Menggunakan $e sesuai definisi catch (e)
+      throw Exception('Terjadi kesalahan koneksi: $e'); 
     }
   }
 }
