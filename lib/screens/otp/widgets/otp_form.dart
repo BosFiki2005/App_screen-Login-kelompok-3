@@ -78,12 +78,12 @@ class _OtpFormState extends State<OtpForm> {
           ),
           const SizedBox(height: 24),
           _isLoading
-              ? const CircularProgressIndicator(color: Color(0xFFFF7643))
+              ? const CircularProgressIndicator(color: Color.fromARGB(255, 0, 0, 0))
               : ElevatedButton(
                   onPressed: _handleLogin,
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
-                    backgroundColor: const Color(0xFFFF7643),
+                    backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                     foregroundColor: Colors.white,
                     minimumSize: const Size(double.infinity, 48),
                     shape: const RoundedRectangleBorder(
